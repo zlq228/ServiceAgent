@@ -1,0 +1,96 @@
+server:
+  port: 9900
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+file:
+  upload:
+    path: ./uploads
+    allowed-extensions: txt,md
+
+milvus:
+#  host: localhost
+  host: 127.0.0.1
+  port: 19530
+  username: ""
+  password: ""
+  database: default
+  timeout: 10000
+
+# Spring AI Alibaba DashScope 配置
+spring:
+  application:
+    name: ServiceAgent
+  config:
+    import: optional:file:.env[.properties]
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY}
+      chat:
+        options:
+          timeout: 180000
+      retry:
+        max-attempts: 3
+        backoff:
+          initial-interval: 2000
+          multiplier: 2
+          max-interval: 10000
+    # Spring AI MCP 客户端配置
+    # 如果使用mock数据，请注释这部分内容
+    mcp:
+      client:
+        enabled: true
+        name: tencent-mcp-server
+        version: 1.0.0
+        request-timeout: 60s
+        type: ASYNC
+        sse:
+          connections:
+            tencent-cls:
+              url: https://mcp-api.tencent-cloud.com
+              sse-endpoint: ${TENCENT_MCP_SSE_ENDPOINT}  # 完整的SSE端点路径
+        stdio:
+          connections:
+            map-service:
+              command: python3
+              args:
+                - ${MAP_SERVER_PATH}
+
+# 阿里云 DashScope Embedding API 配置
+dashscope:
+  api:
+    key: ${DASHSCOPE_API_KEY}
+  embedding:
+    model: text-embedding-v4
+
+# 文档分片配置
+document:
+  chunk:
+    max-size: 800
+    overlap: 100
+
+# RAG 配置
+rag:
+  top-k: 3
+  model: "qwen-turbo"
+
+# 投诉工单配置（Mock 模式）
+complaint:
+  mock-enabled: true
+
+# 投诉历史记录配置（Mock 模式）
+complaint-history:
+  mock-enabled: true
+
+# Prometheus 配置
+prometheus:
+  base-url: http://localhost:9090
+  timeout: 10  # 超时时间（秒）
+  mock-enabled: false  # 是否启用 Mock 模式（用于测试）
+
+# CLS 云日志服务配置
+cls:
+  mock-enabled: false  # 是否启用 Mock 模式（用于测试，设为 true 返回与告警关联的模拟日志数据）
